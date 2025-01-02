@@ -5,3 +5,9 @@ class UiObject:
         :return: a 1x2 _tuple of integers
         """
         pass
+
+    def get_location(self):
+        """
+        Gets a vector 2 location on the board from the player
+        :return: Vector2
+        """

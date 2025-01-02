@@ -23,5 +23,11 @@ class Vector2:
     def __truediv__(self, other: int):
         return Vector2(self.x / other, self.y / other)
 
+    def __str__(self):
+        return f'{self.x}, {self.y}'
+
+    def __repr__(self):
+        return self.__str__()
+
     def module(self):
         return (self.x^2+self.y^2)**0.5

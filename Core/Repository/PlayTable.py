@@ -15,4 +15,4 @@ class PlayTable:
         :param position: Position of the cell
         :param value: The value to be written
         """
-        self.grid[position.x, position.y] = value
+        self.grid[position.y, position.x] = value
