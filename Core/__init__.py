@@ -36,7 +36,7 @@ class Core:
         self.valid_directions = []
         # Iterate through all directions to check for validity
         for direction in self.direction_set:
-            move_valid = move_valid or self.__validate_move(player, location, direction, board)
+            move_valid = (self.__validate_move(player, location, direction, board) or move_valid)
 
         if not move_valid:
             raise MoveInvalidException("Invalid move")
@@ -48,6 +48,37 @@ class Core:
             while self.Table.grid[_loc.y, _loc.x] != player:
                 self.Table.grid[_loc.y, _loc.x] = player
                 _loc = _loc + direction
+
+    def __is_on_board(self, row, col):
+        board = self.Table.grid
+        return 0 <= row < len(board) and 0 <= col < len(board[0])
+
+    def get_valid_moves(self, board, player_id):
+        """
+        Find all valid moves for the given player.
+        :param player_id: The player for whom to find valid moves (1 or 2).
+        :param board: The board in which to get valid moves.
+        :return: List of tuples representing valid moves (array, col).
+        """
+        opponent_id = 1 if player_id == 2 else 2
+        directions = [
+            (-1, 0), (1, 0),  # vertical
+            (0, -1), (0, 1),  # horizontal
+            (-1, -1), (-1, 1), (1, -1), (1, 1)  # diagonal
+        ]
+        valid_moves = []
+
+
+        for row in range(len(board)):
+            for col in range(len(board[0])):
+                move_valid  = False
+                for direction in self.direction_set:
+                    move_valid = move_valid or self.__validate_move(player_id, v2(col, row), direction, board)
+
+                if move_valid:
+                    valid_moves.append((row, col))
+
+        return valid_moves
 
     def __validate_move(self, player, location, direction, board):
         # Ensure the starting cell is empty
@@ -76,3 +107,27 @@ class Core:
             current_location += direction
 
         return False  # Reached the edge without finding player's piece
+
+    def apply_move(self, temp_board, move, player_id):
+        board = temp_board
+        player = player_id
+        location = move
+
+        move_valid = False
+
+        self.valid_directions = []
+        # Iterate through all directions to check for validity
+        for direction in self.direction_set:
+            move_valid = move_valid or self.__validate_move(player, location, direction, board)
+
+        if not move_valid:
+            raise MoveInvalidException("Invalid move")
+
+        # Update board if the move is valid
+        board[location.y, location.x] = player
+        for direction in self.valid_directions:
+            _loc = location + direction
+            while board[_loc.y, _loc.x] != player:
+                board[_loc.y, _loc.x] = player
+                _loc = _loc + direction
+
